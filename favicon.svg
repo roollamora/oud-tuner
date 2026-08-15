@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="10" fill="#1e3d2d"/>
+  <ellipse cx="28" cy="34" rx="16" ry="14" fill="#c9a86c"/>
+  <ellipse cx="28" cy="33" rx="5" ry="4" fill="#1e3d2d" opacity="0.55"/>
+  <rect x="40" y="30" width="16" height="6" rx="1" fill="#8b5e34"/>
+  <text x="10" y="18" fill="#d4b483" font-family="Georgia, serif" font-size="11">م</text>
+</svg>
