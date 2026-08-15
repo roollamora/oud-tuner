@@ -24,6 +24,8 @@ export interface TuningPreset {
   name: string;
   region: string;
   genre: string;
+  /** Short tags used for genre filtering */
+  genres: string[];
   description: string;
   courses: Course[];
   caution?: string;
@@ -74,6 +76,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Arabic Standard',
     region: 'Levant & Egypt',
     genre: 'Classical Arabic · Tarab',
+    genres: ['Classical Arabic', 'Tarab'],
     description:
       'The most common modern Arabic six-course tuning. Warm, deep, and suited to maqam repertoire.',
     courses: [
@@ -90,6 +93,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Arabic Classical',
     region: 'Syria · Iraq · Egypt',
     genre: 'Classical · Old style',
+    genres: ['Classical Arabic', 'Old style'],
     description:
       'An older Arabic pattern with open D and G drones — excellent for rast and related maqamat.',
     courses: [
@@ -106,6 +110,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Modern Arabic',
     region: 'Syria · Lebanon',
     genre: 'Contemporary · Solo',
+    genres: ['Contemporary', 'Solo'],
     description:
       'A higher Arabic setup (F–F) favored by some modern players for brilliance and solo projection.',
     courses: [
@@ -122,6 +127,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Egyptian Five-Course',
     region: 'Egypt',
     genre: 'Folk · Shaabi · Classical',
+    genres: ['Folk', 'Shaabi', 'Classical Arabic'],
     description:
       'Five paired courses without the lowest bass drone — agile and common on many Egyptian ouds.',
     courses: [
@@ -137,6 +143,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Iraqi',
     region: 'Iraq',
     genre: 'Iraqi maqam · Classical',
+    genres: ['Iraqi maqam', 'Classical Arabic'],
     description:
       'A characteristic Iraqi layout with a distinctive low F–C pairing under the middle courses.',
     courses: [
@@ -153,6 +160,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Turkish Bolahenk',
     region: 'Türkiye',
     genre: 'Ottoman · Classical Turkish',
+    genres: ['Ottoman', 'Classical Turkish'],
     description:
       'The classic Bolahenk tuning — brighter and a whole step above typical Arabic pitch.',
     caution:
@@ -171,6 +179,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Turkish Common',
     region: 'Türkiye · Greece · Armenia',
     genre: 'Ottoman · Folk · Rebetiko',
+    genres: ['Ottoman', 'Folk', 'Rebetiko'],
     description:
       'A widely used Turkish-family tuning with open E and A drones — shared across Turkish, Greek, and Armenian practice.',
     caution:
@@ -189,6 +198,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Armenian',
     region: 'Armenia · diaspora',
     genre: 'Folk · Classical Armenian',
+    genres: ['Folk', 'Classical Armenian'],
     description:
       'Closely related to Turkish setups; this B–F# drone pattern appears with Necati Çelik–influenced players and Armenian circles.',
     caution: 'Higher Turkish-family tension — use suitable strings.',
@@ -206,6 +216,7 @@ export const TUNINGS: TuningPreset[] = [
     name: 'Persian Barbat',
     region: 'Iran',
     genre: 'Persian classical · Dastgah',
+    genres: ['Persian classical', 'Dastgah'],
     description:
       'Five-course barbat-style tuning — lean and clear for dastgah-oriented playing.',
     courses: [
@@ -221,6 +232,11 @@ export const TUNINGS: TuningPreset[] = [
 export const REGIONS = [
   'All',
   ...Array.from(new Set(TUNINGS.map((t) => t.region))),
+];
+
+export const GENRES = [
+  'All',
+  ...Array.from(new Set(TUNINGS.flatMap((t) => t.genres))).sort(),
 ];
 
 export function formatNote(note: NoteName, octave: number): string {

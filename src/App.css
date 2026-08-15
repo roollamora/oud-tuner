@@ -218,6 +218,39 @@
   margin-bottom: 1.25rem;
 }
 
+.browse-mode {
+  display: inline-flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--leaf-deep) 18%, transparent);
+}
+
+.mode {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0.55rem 1rem 0.7rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  position: relative;
+}
+
+.mode.active {
+  color: var(--leaf-deep);
+}
+
+.mode.active::after {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: -1px;
+  height: 2px;
+  background: var(--copper);
+}
+
 .tab {
   appearance: none;
   background: transparent;

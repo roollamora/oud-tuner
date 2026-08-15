@@ -30,7 +30,9 @@ export default function App() {
   const [selectedCourse, setSelectedCourse] = useState(0);
   const [listening, setListening] = useState(false);
   const [hz, setHz] = useState<number | null>(null);
+  const [browseBy, setBrowseBy] = useState<'region' | 'genre'>('region');
   const [regionFilter, setRegionFilter] = useState('All');
+  const [genreFilter, setGenreFilter] = useState('All');
   const monitor = useRef(new PitchMonitor());
 
   const tuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0];
@@ -60,13 +62,22 @@ export default function App() {
   }, [tuningId]);
 
   const filtered =
-    regionFilter === 'All'
-      ? TUNINGS
-      : TUNINGS.filter((t) => t.region === regionFilter);
+    browseBy === 'region'
+      ? regionFilter === 'All'
+        ? TUNINGS
+        : TUNINGS.filter((t) => t.region === regionFilter)
+      : genreFilter === 'All'
+        ? TUNINGS
+        : TUNINGS.filter((t) => t.genres.includes(genreFilter));
 
   const regions = [
     'All',
     ...Array.from(new Set(TUNINGS.map((t) => t.region))),
+  ];
+
+  const genres = [
+    'All',
+    ...Array.from(new Set(TUNINGS.flatMap((t) => t.genres))).sort(),
   ];
 
   async function toggleMic() {
@@ -99,9 +110,14 @@ export default function App() {
 
       {view === 'home' ? (
         <Home
+          browseBy={browseBy}
+          onBrowseBy={setBrowseBy}
           regions={regions}
+          genres={genres}
           regionFilter={regionFilter}
+          genreFilter={genreFilter}
           onRegion={setRegionFilter}
+          onGenre={setGenreFilter}
           tunings={filtered}
           onSelect={enterTuner}
           onStart={() => enterTuner()}
@@ -133,20 +149,34 @@ export default function App() {
 }
 
 function Home({
+  browseBy,
+  onBrowseBy,
   regions,
+  genres,
   regionFilter,
+  genreFilter,
   onRegion,
+  onGenre,
   tunings,
   onSelect,
   onStart,
 }: {
+  browseBy: 'region' | 'genre';
+  onBrowseBy: (mode: 'region' | 'genre') => void;
   regions: string[];
+  genres: string[];
   regionFilter: string;
+  genreFilter: string;
   onRegion: (r: string) => void;
+  onGenre: (g: string) => void;
   tunings: TuningPreset[];
   onSelect: (t: TuningPreset) => void;
   onStart: () => void;
 }) {
+  const tabs = browseBy === 'region' ? regions : genres;
+  const active = browseBy === 'region' ? regionFilter : genreFilter;
+  const onTab = browseBy === 'region' ? onRegion : onGenre;
+
   return (
     <main className="home">
       <header className="hero">
@@ -180,15 +210,32 @@ function Home({
           <p>Pick the tradition your instrument and repertoire call for.</p>
         </div>
 
-        <div className="region-tabs" role="tablist" aria-label="Filter by region">
-          {regions.map((r) => (
+        <div className="browse-mode" role="group" aria-label="Browse by">
+          <button
+            type="button"
+            className={browseBy === 'region' ? 'mode active' : 'mode'}
+            onClick={() => onBrowseBy('region')}
+          >
+            By geography
+          </button>
+          <button
+            type="button"
+            className={browseBy === 'genre' ? 'mode active' : 'mode'}
+            onClick={() => onBrowseBy('genre')}
+          >
+            By genre
+          </button>
+        </div>
+
+        <div className="region-tabs" role="tablist" aria-label="Filter tunings">
+          {tabs.map((r) => (
             <button
               key={r}
               type="button"
               role="tab"
-              aria-selected={regionFilter === r}
-              className={regionFilter === r ? 'tab active' : 'tab'}
-              onClick={() => onRegion(r)}
+              aria-selected={active === r}
+              className={active === r ? 'tab active' : 'tab'}
+              onClick={() => onTab(r)}
             >
               {r}
             </button>
