@@ -131,33 +131,58 @@ function getToneCtx(): AudioContext {
   return sharedCtx;
 }
 
-/** Soft plucked-string-like reference tone. */
-export async function playReference(freq: number, duration = 1.4): Promise<void> {
+/** Steady wind / bowed-string reference — long sustain, same exact pitch. */
+export async function playReference(freq: number, duration = 3.6): Promise<void> {
   const ctx = getToneCtx();
   if (ctx.state === 'suspended') await ctx.resume();
 
   const now = ctx.currentTime;
+  const attack = 0.18;
+  const release = 0.45;
+  const sustainEnd = Math.max(attack + 0.2, duration - release);
+
   const master = ctx.createGain();
   master.gain.setValueAtTime(0, now);
-  master.gain.linearRampToValueAtTime(0.22, now + 0.02);
-  master.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  master.gain.linearRampToValueAtTime(0.2, now + attack);
+  master.gain.setValueAtTime(0.2, now + sustainEnd);
+  master.gain.linearRampToValueAtTime(0.0001, now + duration);
+
+  // Soft low-pass keeps the tone mellow like flute / bowed gut
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = Math.min(2800, freq * 6);
+  filter.Q.value = 0.7;
+  filter.connect(master);
   master.connect(ctx.destination);
 
+  // Gentle vibrato (bow/breath), not enough to blur the pitch target
+  const lfo = ctx.createOscillator();
+  const lfoGain = ctx.createGain();
+  lfo.type = 'sine';
+  lfo.frequency.value = 5.2;
+  lfoGain.gain.value = freq * 0.0025;
+  lfo.connect(lfoGain);
+  lfo.start(now);
+  lfo.stop(now + duration);
+
+  // Harmonic stack closer to wind / bowed string than a pluck
   const partials = [
-    { mul: 1, gain: 1 },
-    { mul: 2, gain: 0.35 },
-    { mul: 3, gain: 0.12 },
-    { mul: 4, gain: 0.06 },
+    { mul: 1, gain: 1, type: 'sine' as OscillatorType },
+    { mul: 2, gain: 0.28, type: 'sine' as OscillatorType },
+    { mul: 3, gain: 0.16, type: 'sine' as OscillatorType },
+    { mul: 4, gain: 0.07, type: 'sine' as OscillatorType },
+    { mul: 5, gain: 0.04, type: 'sine' as OscillatorType },
   ];
 
   for (const p of partials) {
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
-    osc.type = 'sine';
+    osc.type = p.type;
     osc.frequency.value = freq * p.mul;
+    lfoGain.connect(osc.frequency);
     g.gain.value = p.gain;
     osc.connect(g);
-    g.connect(master);
+    g.connect(filter);
     osc.start(now);
     osc.stop(now + duration);
   }
