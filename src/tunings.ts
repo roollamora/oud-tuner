@@ -218,13 +218,14 @@ export const TUNINGS: TuningPreset[] = [
     genre: 'Persian classical · Dastgah',
     genres: ['Persian classical', 'Dastgah'],
     description:
-      'Five-course barbat-style tuning — lean and clear for dastgah-oriented playing.',
+      'Eleven strings in six courses: a single bass C, then five paired courses (G A D G C) — the standard Persian barbat layout for dastgah playing.',
     courses: [
-      course('5 · bass', 'G', 2),
-      course('4', 'A', 2),
-      course('3', 'D', 3),
-      course('2', 'G', 3),
-      course('1 · treble', 'C', 4),
+      course('6 · bass (single)', 'C', 2),
+      course('5 · paired', 'G', 2),
+      course('4 · paired', 'A', 2),
+      course('3 · paired', 'D', 3),
+      course('2 · paired', 'G', 3),
+      course('1 · treble (paired)', 'C', 4),
     ],
   },
 ];
